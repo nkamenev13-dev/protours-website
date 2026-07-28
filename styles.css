@@ -58,3 +58,7 @@
 /* Stronger desktop header scale */
 @media(min-width:901px){.site-header{height:96px}.site-header .logo{font-size:42px;letter-spacing:-2.4px}.site-header nav{gap:46px;font-size:20px}.hero{margin-top:96px}}
 @media(min-width:601px) and (max-width:900px){.site-header .logo{font-size:31px}}
+
+/* The gallery is now the card cover; navigation uses large edge chevrons. */
+.tour-card>.tour-photo-carousel{margin:0}.tour-card>.tour-photo-carousel .tour-photo-track .gallery-item img{height:300px}.tour-card>.tour-photo-carousel .tour-photo-controls{inset:50% 0 auto;right:0}.tour-card>.tour-photo-carousel .tour-photo-arrow{width:48px;height:78px;border-radius:2px;background:rgba(246,246,243,.88);color:#aeb2b0;font-family:Arial,sans-serif;font-size:72px;font-weight:300;line-height:.7;box-shadow:none}.tour-card>.tour-photo-carousel .tour-photo-arrow:hover{background:rgba(251,250,246,.98);color:#727978}.tour-card>.tour-photo-carousel .popular{top:16px;right:16px;left:auto}
+@media(max-width:600px){.tour-card>.tour-photo-carousel .tour-photo-track .gallery-item img{height:260px}.tour-card>.tour-photo-carousel .tour-photo-arrow{width:42px;height:68px;font-size:62px}}

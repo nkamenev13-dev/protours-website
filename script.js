@@ -52,14 +52,20 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
   controls.className = "tour-photo-controls";
   previous.type = next.type = "button";
   previous.className = next.className = "tour-photo-arrow";
-  previous.textContent = "←";
-  next.textContent = "→";
+  previous.textContent = "‹";
+  next.textContent = "›";
   previous.setAttribute("aria-label", "Previous tour photo");
   next.setAttribute("aria-label", "Next tour photo");
   photos.forEach((photo) => track.append(photo.cloneNode(true)));
   viewport.append(track);
   controls.append(previous, next);
   carousel.append(viewport, controls);
+  if (tabs.dataset.popular === "true") {
+    const popular = document.createElement("span");
+    popular.className = "popular";
+    popular.textContent = "Most popular";
+    carousel.append(popular);
+  }
 
   const showPhoto = (index) => {
     currentPhoto = (index + photos.length) % photos.length;
@@ -123,7 +129,9 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
     includedPanel.hidden = isOpen;
   });
 
-  tabs.append(carousel, scheduleToggle, schedulePanel, includedToggle, includedPanel);
+  const card = tabs.closest(".tour-card");
+  card.insertBefore(carousel, card.querySelector(".tour-body"));
+  tabs.append(scheduleToggle, schedulePanel, includedToggle, includedPanel);
 });
 
 const benefitsTrack = document.querySelector(".benefits-grid");
