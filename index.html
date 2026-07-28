@@ -38,12 +38,6 @@
         <div class="hero-actions">
           <a class="button" href="#tours">Explore our tours</a>
         </div>
-        <div class="trust-row" aria-label="Tour highlights">
-          <span>✓ Paris hotel pickup</span>
-          <span>✓ Comfortable transport</span>
-          <span>✓ English-speaking driver-host</span>
-          <span>✓ From €150 per person</span>
-        </div>
       </div>
     </section>
 
@@ -362,10 +356,27 @@
         </label>
         <div class="form-row">
           <label>Preferred date<input type="date" name="date" required></label>
-          <label>Guests<input type="number" name="guests" min="1" max="7" value="2" required></label>
+          <label>Guests<input type="number" name="guests" min="1" max="7" value="1" required></label>
         </div>
         <label>Your name<input type="text" name="name" autocomplete="name" placeholder="Jane Smith" required></label>
-        <label>WhatsApp / phone<input type="tel" name="phone" autocomplete="tel" placeholder="+1 555 123 4567" required></label>
+        <label>WhatsApp / phone
+          <span class="phone-field">
+            <select name="country-code" id="country-code" aria-label="Country calling code">
+              <option value="+33" data-placeholder="6 12 34 56 78" selected>France +33</option>
+              <option value="+1" data-placeholder="555 123 4567">USA / Canada +1</option>
+              <option value="+44" data-placeholder="7700 900 123">United Kingdom +44</option>
+              <option value="+61" data-placeholder="412 345 678">Australia +61</option>
+              <option value="+49" data-placeholder="151 234 5678">Germany +49</option>
+              <option value="+39" data-placeholder="312 345 6789">Italy +39</option>
+              <option value="+34" data-placeholder="612 345 678">Spain +34</option>
+              <option value="+32" data-placeholder="470 12 34 56">Belgium +32</option>
+              <option value="+31" data-placeholder="6 1234 5678">Netherlands +31</option>
+              <option value="+41" data-placeholder="79 123 45 67">Switzerland +41</option>
+              <option value="+971" data-placeholder="50 123 4567">UAE +971</option>
+            </select>
+            <input type="tel" name="phone" id="phone" autocomplete="tel-national" inputmode="tel" placeholder="6 12 34 56 78" required>
+          </span>
+        </label>
         <label class="consent"><input type="checkbox" required> I agree to be contacted about this booking request.</label>
         <button class="button submit-button" type="submit">Request availability <span>→</span></button>
         <p class="form-note">No charge now. We’ll contact you within 1–2 hours. Payment on the day is available.</p>

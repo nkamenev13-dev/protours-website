@@ -16,51 +16,61 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
   const source = document.querySelector(tabs.dataset.source);
   if (!source) return;
 
-  const tabList = document.createElement("div");
-  tabList.className = "tour-tab-list";
-  tabList.setAttribute("role", "tablist");
+  const carousel = document.createElement("div");
+  const viewport = document.createElement("div");
+  const track = document.createElement("div");
+  const controls = document.createElement("div");
+  const previous = document.createElement("button");
+  const next = document.createElement("button");
+  const photos = [...source.querySelectorAll(".tour-photo-strip .gallery-item")];
+  let currentPhoto = 0;
 
-  const panels = ["schedule", "photos"].map((name, tabIndex) => {
-    const tab = document.createElement("button");
-    const panel = document.createElement("div");
-    const id = `tour-${cardIndex}-${name}`;
+  carousel.className = "tour-photo-carousel";
+  viewport.className = "tour-photo-viewport";
+  track.className = "tour-photo-track";
+  controls.className = "tour-photo-controls";
+  previous.type = next.type = "button";
+  previous.className = next.className = "tour-photo-arrow";
+  previous.textContent = "←";
+  next.textContent = "→";
+  previous.setAttribute("aria-label", "Previous tour photo");
+  next.setAttribute("aria-label", "Next tour photo");
+  photos.forEach((photo) => track.append(photo.cloneNode(true)));
+  viewport.append(track);
+  controls.append(previous, next);
+  carousel.append(viewport, controls);
 
-    tab.type = "button";
-    tab.className = "tour-tab";
-    tab.textContent = name[0].toUpperCase() + name.slice(1);
-    tab.setAttribute("role", "tab");
-    tab.setAttribute("aria-controls", id);
-    tab.setAttribute("aria-selected", String(tabIndex === 0));
+  const showPhoto = (index) => {
+    currentPhoto = (index + photos.length) % photos.length;
+    track.style.transform = `translateX(-${currentPhoto * 100}%)`;
+  };
+  previous.addEventListener("click", () => showPhoto(currentPhoto - 1));
+  next.addEventListener("click", () => showPhoto(currentPhoto + 1));
 
-    panel.id = id;
-    panel.className = `tour-tab-panel ${name}-panel`;
-    panel.setAttribute("role", "tabpanel");
-    panel.hidden = tabIndex !== 0;
+  const scheduleToggle = document.createElement("button");
+  const schedulePanel = document.createElement("div");
+  const scheduleId = `tour-${cardIndex}-schedule`;
+  scheduleToggle.type = "button";
+  scheduleToggle.className = "schedule-toggle";
+  scheduleToggle.setAttribute("aria-controls", scheduleId);
+  scheduleToggle.setAttribute("aria-expanded", "false");
+  scheduleToggle.innerHTML = "<span>Schedule</span><b aria-hidden=\"true\">+</b>";
+  schedulePanel.id = scheduleId;
+  schedulePanel.className = "tour-tab-panel schedule-panel";
+  schedulePanel.hidden = true;
+  schedulePanel.append(source.querySelector(".timeline").cloneNode(true));
+  const note = source.querySelector(".schedule-note");
+  const included = source.querySelector(".inclusions-grid");
+  if (note) schedulePanel.append(note.cloneNode(true));
+  if (included) schedulePanel.append(included.cloneNode(true));
 
-    if (name === "schedule") {
-      panel.append(source.querySelector(".timeline").cloneNode(true));
-      const note = source.querySelector(".schedule-note");
-      const included = source.querySelector(".inclusions-grid");
-      if (note) panel.append(note.cloneNode(true));
-      if (included) panel.append(included.cloneNode(true));
-    } else {
-      panel.append(source.querySelector(".tour-photo-strip").cloneNode(true));
-    }
-
-    tab.addEventListener("click", () => {
-      tabList.querySelectorAll(".tour-tab").forEach((item) =>
-        item.setAttribute("aria-selected", String(item === tab))
-      );
-      panels.forEach((item) => {
-        item.hidden = item !== panel;
-      });
-    });
-
-    tabList.append(tab);
-    return panel;
+  scheduleToggle.addEventListener("click", () => {
+    const isOpen = scheduleToggle.getAttribute("aria-expanded") === "true";
+    scheduleToggle.setAttribute("aria-expanded", String(!isOpen));
+    schedulePanel.hidden = isOpen;
   });
 
-  tabs.append(tabList, ...panels);
+  tabs.append(carousel, scheduleToggle, schedulePanel);
 });
 
 const benefitsTrack = document.querySelector(".benefits-grid");
@@ -83,6 +93,44 @@ benefitsTrack.addEventListener("scroll", () => {
 });
 document.querySelector(".benefits-prev").disabled = true;
 
+let benefitsAutoplay;
+const startBenefits = () => {
+  clearInterval(benefitsAutoplay);
+  benefitsAutoplay = setInterval(() => {
+    const atEnd = benefitsTrack.scrollLeft + benefitsTrack.clientWidth >= benefitsTrack.scrollWidth - 5;
+    if (atEnd) {
+      benefitsTrack.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      scrollBenefits(1);
+    }
+  }, 4000);
+};
+const pauseBenefits = () => clearInterval(benefitsAutoplay);
+startBenefits();
+benefitsTrack.addEventListener("mouseenter", pauseBenefits);
+benefitsTrack.addEventListener("mouseleave", startBenefits);
+benefitsTrack.addEventListener("touchstart", pauseBenefits, { once: true, passive: true });
+
+const countryCode = document.querySelector("#country-code");
+const phoneInput = document.querySelector("#phone");
+countryCode.addEventListener("change", () => {
+  phoneInput.placeholder = countryCode.selectedOptions[0].dataset.placeholder;
+});
+phoneInput.addEventListener("input", () => {
+  const groupSizes = countryCode.selectedOptions[0].dataset.placeholder
+    .split(" ")
+    .map((group) => group.length);
+  const maxLength = groupSizes.reduce((total, size) => total + size, 0);
+  const digits = phoneInput.value.replace(/\D/g, "").slice(0, maxLength);
+  const groups = [];
+  let cursor = 0;
+  groupSizes.forEach((size) => {
+    if (cursor < digits.length) groups.push(digits.slice(cursor, cursor + size));
+    cursor += size;
+  });
+  phoneInput.value = groups.join(" ");
+});
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(form);
@@ -93,7 +141,7 @@ form.addEventListener("submit", (event) => {
     `Preferred date: ${data.get("date")}`,
     `Guests: ${data.get("guests")}`,
     `Name: ${data.get("name")}`,
-    `Phone / WhatsApp: ${data.get("phone")}`,
+    `Phone / WhatsApp: ${data.get("country-code")} ${data.get("phone")}`,
   ].join("\n");
   const status = form.querySelector(".form-status");
   status.textContent = "Opening WhatsApp so you can send your request…";
