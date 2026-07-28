@@ -58,3 +58,20 @@ document.querySelector("#chat-send").addEventListener("click", () => {
   const message = field.value.trim() || "Hello ProTours! I have a question about your day trips.";
   window.open(`https://wa.me/33780796121?text=${encodeURIComponent(message)}`, "_blank", "noopener");
 });
+
+const lightbox = document.querySelector("#gallery-lightbox");
+const lightboxImage = lightbox.querySelector("img");
+
+document.querySelectorAll(".gallery-item").forEach((item) => {
+  item.addEventListener("click", () => {
+    const thumbnail = item.querySelector("img");
+    lightboxImage.src = item.dataset.full;
+    lightboxImage.alt = thumbnail.alt;
+    lightbox.showModal();
+  });
+});
+
+lightbox.querySelector(".lightbox-close").addEventListener("click", () => lightbox.close());
+lightbox.addEventListener("click", (event) => {
+  if (event.target === lightbox) lightbox.close();
+});
