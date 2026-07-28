@@ -23,9 +23,19 @@ document.querySelectorAll(".itinerary-link").forEach((link) => {
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+  const data = new FormData(form);
+  const message = [
+    "Hello ProTours! I would like to request availability.",
+    "",
+    `Tour: ${data.get("tour")}`,
+    `Preferred date: ${data.get("date")}`,
+    `Guests: ${data.get("guests")}`,
+    `Name: ${data.get("name")}`,
+    `Phone / WhatsApp: ${data.get("phone")}`,
+  ].join("\n");
   const status = form.querySelector(".form-status");
-  status.textContent =
-    "The booking form is ready. Add your email, WhatsApp or CRM connection to start receiving requests.";
+  status.textContent = "Opening WhatsApp so you can send your request…";
+  window.open(`https://wa.me/33780796121?text=${encodeURIComponent(message)}`, "_blank", "noopener");
 });
 
 const chatLauncher = document.querySelector("#chat-launcher");
@@ -41,4 +51,10 @@ chatLauncher.addEventListener("click", () => {
 chatClose.addEventListener("click", () => {
   chatPanel.hidden = true;
   chatLauncher.setAttribute("aria-expanded", "false");
+});
+
+document.querySelector("#chat-send").addEventListener("click", () => {
+  const field = document.querySelector("#chat-message");
+  const message = field.value.trim() || "Hello ProTours! I have a question about your day trips.";
+  window.open(`https://wa.me/33780796121?text=${encodeURIComponent(message)}`, "_blank", "noopener");
 });
