@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260728-3">
+  <link rel="stylesheet" href="styles.css?v=20260728-4">
 </head>
 <body>
   <header class="site-header">
@@ -373,16 +373,6 @@
       <button class="lightbox-arrow lightbox-next" type="button" aria-label="Next photo">›</button>
     </dialog>
 
-    <section class="steps section">
-      <p class="eyebrow">A simpler way to explore</p>
-      <h2>From request to hotel pickup<br>in three easy steps</h2>
-      <div class="step-grid">
-        <article><span>1</span><h3>Send your request</h3><p>Choose a destination and tell us your preferred date and number of guests.</p></article>
-        <article><span>2</span><h3>Hear from us in 1–2 hours</h3><p>We confirm availability and pickup details. You can pay securely in advance or on the day.</p></article>
-        <article><span>3</span><h3>Meet your driver at the hotel</h3><p>Your English-speaking driver-host picks you up and takes care of the journey.</p></article>
-      </div>
-    </section>
-
     <section class="book section" id="book">
       <div class="book-copy">
         <p class="eyebrow light">Your Normandy day starts here</p>
@@ -390,6 +380,11 @@
         <p>Send a quick request. We’ll contact you within 1–2 hours to confirm availability, pickup details and your preferred way to pay.</p>
       </div>
       <form class="booking-form" id="booking-form">
+        <div class="form-steps" aria-label="How booking works">
+          <article><span>1</span><div><strong>Send your request</strong><p>Choose your tour, date and number of guests.</p></div></article>
+          <article><span>2</span><div><strong>Confirmation in 1–2 hours</strong><p>We confirm availability, pickup and payment.</p></div></article>
+          <article><span>3</span><div><strong>Meet us at your hotel</strong><p>Your English-speaking driver-host picks you up.</p></div></article>
+        </div>
         <label>Tour
           <select id="tour" name="tour" required>
             <option value="">Choose a tour</option>
