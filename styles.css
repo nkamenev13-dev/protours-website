@@ -54,3 +54,7 @@
 @media(max-width:600px){.benefits-grid{margin-right:-6vw}.benefits-grid article{flex-basis:84vw}.benefits-marquee{animation-duration:72s}}
 
 .tour-body>p.tour-hours{min-height:0;margin:0 0 16px;color:var(--ink);font-family:"Fraunces",serif;font-size:32px;font-weight:600;line-height:1}.tour-hours::before{content:"Duration";display:block;margin-bottom:7px;color:#9a7030;font-family:"DM Sans",sans-serif;font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase}
+
+/* Stronger desktop header scale */
+@media(min-width:901px){.site-header{height:96px}.site-header .logo{font-size:42px;letter-spacing:-2.4px}.site-header nav{gap:46px;font-size:20px}.hero{margin-top:96px}}
+@media(min-width:601px) and (max-width:900px){.site-header .logo{font-size:31px}}
