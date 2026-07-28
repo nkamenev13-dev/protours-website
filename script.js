@@ -127,40 +127,22 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
 });
 
 const benefitsTrack = document.querySelector(".benefits-grid");
-const originalBenefits = [...benefitsTrack.children];
-const benefitsGap = parseFloat(getComputedStyle(benefitsTrack).columnGap) || 24;
-const benefitsLoopWidth = originalBenefits.reduce(
-  (total, card) => total + card.getBoundingClientRect().width,
-  benefitsGap * originalBenefits.length
-);
+const benefitsMarquee = benefitsTrack.querySelector(".benefits-marquee");
+const originalBenefits = [...benefitsMarquee.children];
 originalBenefits.forEach((card) => {
   const clone = card.cloneNode(true);
   clone.setAttribute("aria-hidden", "true");
-  benefitsTrack.append(clone);
+  benefitsMarquee.append(clone);
 });
 
 const scrollBenefits = (direction) => {
-  const card = benefitsTrack.querySelector("article");
-  benefitsTrack.scrollBy({
-    left: direction * (card.getBoundingClientRect().width + 24),
-    behavior: "smooth",
-  });
+  const animation = benefitsMarquee.getAnimations()[0];
+  if (!animation) return;
+  animation.currentTime = Math.max(0, animation.currentTime + direction * 3500);
 };
 
 document.querySelector(".benefits-prev").addEventListener("click", () => scrollBenefits(-1));
 document.querySelector(".benefits-next").addEventListener("click", () => scrollBenefits(1));
-
-let previousFrame = performance.now();
-const moveBenefits = (timestamp) => {
-  const elapsed = Math.min(timestamp - previousFrame, 40);
-  previousFrame = timestamp;
-  benefitsTrack.scrollLeft += elapsed * 0.035;
-  if (benefitsTrack.scrollLeft >= benefitsLoopWidth) {
-    benefitsTrack.scrollLeft -= benefitsLoopWidth;
-  }
-  requestAnimationFrame(moveBenefits);
-};
-requestAnimationFrame(moveBenefits);
 
 const countryCode = document.querySelector("#country-code");
 const phoneInput = document.querySelector("#phone");
