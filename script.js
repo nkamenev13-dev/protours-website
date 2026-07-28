@@ -144,13 +144,42 @@ originalBenefits.forEach((card) => {
   benefitsMarquee.append(clone);
 });
 
+const getBenefitsAnimation = () => benefitsMarquee.getAnimations?.()[0];
+benefitsTrack.addEventListener("mouseenter", () => getBenefitsAnimation()?.pause());
+benefitsTrack.addEventListener("mouseleave", () => getBenefitsAnimation()?.play());
+
+let benefitsTouchStartX = 0;
+let benefitsTouchStartY = 0;
+let benefitsAnimationStartTime = 0;
+benefitsTrack.addEventListener("touchstart", (event) => {
+  const animation = getBenefitsAnimation();
+  if (!animation) return;
+  benefitsTouchStartX = event.changedTouches[0].clientX;
+  benefitsTouchStartY = event.changedTouches[0].clientY;
+  benefitsAnimationStartTime = Number(animation.currentTime) || 0;
+  animation.pause();
+}, { passive: true });
+benefitsTrack.addEventListener("touchmove", (event) => {
+  const animation = getBenefitsAnimation();
+  if (!animation) return;
+  const deltaX = event.changedTouches[0].clientX - benefitsTouchStartX;
+  const deltaY = event.changedTouches[0].clientY - benefitsTouchStartY;
+  if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+  event.preventDefault();
+  const duration = Number(animation.effect.getTiming().duration) || 120000;
+  const loopDistance = Math.max(benefitsMarquee.scrollWidth / 2, 1);
+  animation.currentTime = Math.max(0, benefitsAnimationStartTime - deltaX * duration / loopDistance);
+}, { passive: false });
+benefitsTrack.addEventListener("touchend", () => getBenefitsAnimation()?.play(), { passive: true });
+benefitsTrack.addEventListener("touchcancel", () => getBenefitsAnimation()?.play(), { passive: true });
+
 setInterval(() => {
   const hasVisibleCard = [...benefitsMarquee.querySelectorAll("article")].some((card) => {
     const bounds = card.getBoundingClientRect();
     return bounds.right > 0 && bounds.left < window.innerWidth;
   });
   if (!hasVisibleCard) {
-    const animation = benefitsMarquee.getAnimations?.()[0];
+    const animation = getBenefitsAnimation();
     if (animation) animation.currentTime = 0;
   }
 }, 800);
