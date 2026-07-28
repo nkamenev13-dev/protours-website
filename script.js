@@ -8,35 +8,80 @@ document.addEventListener("click", (event) => {
       item.textContent.startsWith(button.dataset.tour)
     );
     if (option) tourSelect.value = option.value;
-    if (tourModal.open) tourModal.close();
     document.querySelector("#book").scrollIntoView({ behavior: "smooth" });
   }
 });
 
-const tourModal = document.querySelector("#tour-modal");
-const tourModalBody = tourModal.querySelector(".tour-modal-body");
+document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
+  const source = document.querySelector(tabs.dataset.source);
+  if (!source) return;
 
-document.querySelectorAll(".itinerary-link").forEach((link) => {
-  link.addEventListener("click", (event) => {
-    event.preventDefault();
-    const itinerary = document.querySelector(link.getAttribute("href"));
-    if (!itinerary) return;
-    const title = itinerary.querySelector("summary h3").textContent;
-    const meta = itinerary.querySelector(".itinerary-meta").cloneNode(true);
-    const content = itinerary.querySelector(".itinerary-content").cloneNode(true);
-    const heading = document.createElement("header");
-    heading.className = "tour-modal-heading";
-    heading.innerHTML = `<p class="eyebrow">Tour details</p><h2 id="tour-modal-title">${title}</h2>`;
-    heading.append(meta);
-    tourModalBody.replaceChildren(heading, content);
-    tourModal.showModal();
+  const tabList = document.createElement("div");
+  tabList.className = "tour-tab-list";
+  tabList.setAttribute("role", "tablist");
+
+  const panels = ["schedule", "photos"].map((name, tabIndex) => {
+    const tab = document.createElement("button");
+    const panel = document.createElement("div");
+    const id = `tour-${cardIndex}-${name}`;
+
+    tab.type = "button";
+    tab.className = "tour-tab";
+    tab.textContent = name[0].toUpperCase() + name.slice(1);
+    tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-controls", id);
+    tab.setAttribute("aria-selected", String(tabIndex === 0));
+
+    panel.id = id;
+    panel.className = `tour-tab-panel ${name}-panel`;
+    panel.setAttribute("role", "tabpanel");
+    panel.hidden = tabIndex !== 0;
+
+    if (name === "schedule") {
+      panel.append(source.querySelector(".timeline").cloneNode(true));
+      const note = source.querySelector(".schedule-note");
+      const included = source.querySelector(".inclusions-grid");
+      if (note) panel.append(note.cloneNode(true));
+      if (included) panel.append(included.cloneNode(true));
+    } else {
+      panel.append(source.querySelector(".tour-photo-strip").cloneNode(true));
+    }
+
+    tab.addEventListener("click", () => {
+      tabList.querySelectorAll(".tour-tab").forEach((item) =>
+        item.setAttribute("aria-selected", String(item === tab))
+      );
+      panels.forEach((item) => {
+        item.hidden = item !== panel;
+      });
+    });
+
+    tabList.append(tab);
+    return panel;
   });
+
+  tabs.append(tabList, ...panels);
 });
 
-tourModal.querySelector(".tour-modal-close").addEventListener("click", () => tourModal.close());
-tourModal.addEventListener("click", (event) => {
-  if (event.target === tourModal) tourModal.close();
+const benefitsTrack = document.querySelector(".benefits-grid");
+const scrollBenefits = (direction) => {
+  const card = benefitsTrack.querySelector("article");
+  benefitsTrack.scrollBy({
+    left: direction * (card.getBoundingClientRect().width + 24),
+    behavior: "smooth",
+  });
+};
+
+document.querySelector(".benefits-prev").addEventListener("click", () => scrollBenefits(-1));
+document.querySelector(".benefits-next").addEventListener("click", () => scrollBenefits(1));
+
+benefitsTrack.addEventListener("scroll", () => {
+  const atStart = benefitsTrack.scrollLeft < 5;
+  const atEnd = benefitsTrack.scrollLeft + benefitsTrack.clientWidth >= benefitsTrack.scrollWidth - 5;
+  document.querySelector(".benefits-prev").disabled = atStart;
+  document.querySelector(".benefits-next").disabled = atEnd;
 });
+document.querySelector(".benefits-prev").disabled = true;
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();

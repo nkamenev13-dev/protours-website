@@ -51,7 +51,13 @@
       <div class="benefits-heading">
         <p class="eyebrow">Why travel with ProTours</p>
         <h2><span>Small groups.</span><br>Bigger experiences.</h2>
-        <p>All the comfort of a thoughtfully planned day trip, with the relaxed feeling of travelling with friends.</p>
+        <div class="benefits-side">
+          <p>All the comfort of a thoughtfully planned day trip, with the relaxed feeling of travelling with friends.</p>
+          <div class="slider-controls" aria-label="Browse advantages">
+            <button class="slider-arrow benefits-prev" type="button" aria-label="Previous advantage">←</button>
+            <button class="slider-arrow benefits-next" type="button" aria-label="Next advantage">→</button>
+          </div>
+        </div>
       </div>
       <div class="benefits-grid">
         <article><span>01</span><h3>Hotel pickup</h3><p>We collect you directly from your Paris hotel and bring you back after the tour.</p></article>
@@ -79,10 +85,10 @@
             <p class="card-kicker">Wild coast & sea air</p>
             <h3><span class="tour-type">Small-group</span>Étretat Tour</h3>
             <p>Walk above Normandy’s dramatic white cliffs and explore the charming seaside town that inspired generations of artists.</p>
+            <div class="tour-tabs" data-source="#itinerary-etretat"></div>
             <div class="tour-footer">
               <div class="tour-price"><small>From</small><strong>€170</strong><small>/ person</small></div>
               <div class="tour-actions">
-                <a class="tour-action itinerary-link" href="#itinerary-etretat">Schedule & photos</a>
                 <a class="tour-action primary" href="#book" data-tour="Étretat">Check availability</a>
               </div>
             </div>
@@ -95,10 +101,10 @@
             <p class="card-kicker">A medieval icon</p>
             <h3><span class="tour-type">Small-group</span>Mont Saint-Michel Tour</h3>
             <p>Experience the unforgettable island abbey, its medieval lanes and vast tidal bay on a relaxed day trip from Paris.</p>
+            <div class="tour-tabs" data-source="#itinerary-mont-saint-michel"></div>
             <div class="tour-footer">
               <div class="tour-price"><small>From</small><strong>€190</strong><small>/ person</small></div>
               <div class="tour-actions">
-                <a class="tour-action itinerary-link" href="#itinerary-mont-saint-michel">Schedule & photos</a>
                 <a class="tour-action primary" href="#book" data-tour="Mont Saint-Michel">Check availability</a>
               </div>
             </div>
@@ -111,10 +117,10 @@
             <p class="card-kicker">The ultimate Normandy day</p>
             <h3><span class="tour-type">Small-group</span>Mont Saint-Michel + Étretat Tour</h3>
             <p>See two of northern France’s greatest landmarks in one ambitious, carefully planned day—with every transfer handled.</p>
+            <div class="tour-tabs" data-source="#itinerary-combo"></div>
             <div class="tour-footer">
               <div class="tour-price"><small>From</small><strong>€210</strong><small>/ person</small></div>
               <div class="tour-actions">
-                <a class="tour-action itinerary-link" href="#itinerary-combo">Schedule & photos</a>
                 <a class="tour-action primary" href="#book" data-tour="Mont Saint-Michel + Étretat">Check availability</a>
               </div>
             </div>
@@ -277,11 +283,6 @@
         </details>
       </div>
     </section>
-
-    <dialog class="tour-modal" id="tour-modal" aria-labelledby="tour-modal-title">
-      <button class="tour-modal-close" type="button" aria-label="Close tour details">×</button>
-      <div class="tour-modal-body"></div>
-    </dialog>
 
     <section class="guest-gallery section" id="gallery">
       <div class="gallery-heading">
