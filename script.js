@@ -1,6 +1,27 @@
 const form = document.querySelector("#booking-form");
 const tourSelect = document.querySelector("#tour");
 
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+if (location.hash) {
+  history.replaceState(null, "", `${location.pathname}${location.search}`);
+}
+window.addEventListener("load", () => window.scrollTo(0, 0), { once: true });
+
+document.addEventListener("click", (event) => {
+  const anchor = event.target.closest('a[href^="#"]');
+  if (!anchor) return;
+  const href = anchor.getAttribute("href");
+  if (href === "#") {
+    event.preventDefault();
+    return;
+  }
+  const target = document.querySelector(href);
+  if (!target) return;
+  event.preventDefault();
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  history.replaceState(null, "", `${location.pathname}${location.search}`);
+});
+
 document.addEventListener("click", (event) => {
   const button = event.target.closest("[data-tour]");
   if (button) {
