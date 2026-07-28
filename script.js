@@ -83,6 +83,7 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
     event.preventDefault();
     showPhoto(currentPhoto + (distance < 0 ? 1 : -1));
   }, { passive: false });
+  setInterval(() => showPhoto(currentPhoto + 1), 6000 + cardIndex * 350);
 
   const scheduleToggle = document.createElement("button");
   const schedulePanel = document.createElement("div");
@@ -217,18 +218,53 @@ document.querySelector("#chat-send").addEventListener("click", () => {
 
 const lightbox = document.querySelector("#gallery-lightbox");
 const lightboxImage = lightbox.querySelector("img");
+let activeGallery = [];
+let activeGalleryIndex = 0;
+
+const showLightboxPhoto = (index) => {
+  if (!activeGallery.length) return;
+  activeGalleryIndex = (index + activeGallery.length) % activeGallery.length;
+  const item = activeGallery[activeGalleryIndex];
+  const thumbnail = item.querySelector("img");
+  lightboxImage.src = item.dataset.full;
+  lightboxImage.alt = thumbnail.alt;
+};
 
 document.addEventListener("click", (event) => {
   const item = event.target.closest(".gallery-item");
   if (item) {
-    const thumbnail = item.querySelector("img");
-    lightboxImage.src = item.dataset.full;
-    lightboxImage.alt = thumbnail.alt;
+    const gallery = item.closest(".tour-photo-track, .gallery-grid");
+    activeGallery = gallery ? [...gallery.querySelectorAll(".gallery-item")] : [item];
+    showLightboxPhoto(activeGallery.indexOf(item));
     lightbox.showModal();
   }
 });
 
 lightbox.querySelector(".lightbox-close").addEventListener("click", () => lightbox.close());
+lightbox.querySelector(".lightbox-prev").addEventListener("click", () =>
+  showLightboxPhoto(activeGalleryIndex - 1)
+);
+lightbox.querySelector(".lightbox-next").addEventListener("click", () =>
+  showLightboxPhoto(activeGalleryIndex + 1)
+);
+
+let lightboxTouchStartX = 0;
+lightbox.addEventListener("touchstart", (event) => {
+  lightboxTouchStartX = event.changedTouches[0].clientX;
+}, { passive: true });
+lightbox.addEventListener("touchend", (event) => {
+  const distance = event.changedTouches[0].clientX - lightboxTouchStartX;
+  if (Math.abs(distance) < 35) return;
+  event.preventDefault();
+  showLightboxPhoto(activeGalleryIndex + (distance < 0 ? 1 : -1));
+}, { passive: false });
+
+document.addEventListener("keydown", (event) => {
+  if (!lightbox.open) return;
+  if (event.key === "ArrowLeft") showLightboxPhoto(activeGalleryIndex - 1);
+  if (event.key === "ArrowRight") showLightboxPhoto(activeGalleryIndex + 1);
+});
+
 lightbox.addEventListener("click", (event) => {
   if (event.target === lightbox) lightbox.close();
 });
