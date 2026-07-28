@@ -52,7 +52,8 @@ async function receiveLead(request, response) {
   }
 
   const text = [
-    "🔔 <b>New ProTours lead</b>", "",
+    "🔔 <b>New lead from the ProTours website</b>",
+    "Source: protours.fr", "",
     `<b>Tour:</b> ${escapeHtml(lead.tour)}`,
     `<b>Date:</b> ${escapeHtml(lead.date)}`,
     `<b>Guests:</b> ${escapeHtml(lead.guests)}`,
