@@ -218,21 +218,47 @@ form.querySelector(".guest-plus").addEventListener("click", () => {
   guestsInput.value = Math.min(Number(guestsInput.max), Number(guestsInput.value) + 1);
 });
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = new FormData(form);
-  const message = [
-    "Hello ProTours! I would like to request availability.",
-    "",
-    `Tour: ${data.get("tour")}`,
-    `Preferred date: ${data.get("date")}`,
-    `Guests: ${data.get("guests")}`,
-    `Name: ${data.get("name")}`,
-    `Phone / WhatsApp: ${`${data.get("country-code")} ${data.get("phone")}`.trim()}`,
-  ].join("\n");
   const status = form.querySelector(".form-status");
-  status.textContent = "Opening WhatsApp so you can send your request…";
-  window.open(`https://wa.me/33780796121?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+  const submit = form.querySelector(".submit-button");
+  const originalLabel = submit.innerHTML;
+  const payload = {
+    tour: data.get("tour"),
+    date: data.get("date"),
+    guests: data.get("guests"),
+    name: data.get("name"),
+    phone: `${data.get("country-code")} ${data.get("phone")}`.trim(),
+    website: data.get("website"),
+  };
+
+  submit.disabled = true;
+  submit.textContent = "Sending…";
+  status.className = "form-status";
+  status.textContent = "";
+
+  try {
+    const response = await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.error || "Request failed.");
+
+    status.classList.add("is-success");
+    status.textContent = "Thank you! Your request has been sent. We’ll contact you within 1–2 hours.";
+    form.reset();
+    guestsInput.value = "1";
+    updatePhoneCountry();
+  } catch {
+    status.classList.add("is-error");
+    status.innerHTML = 'We couldn’t send your request. Please <a href="https://wa.me/33780796121" target="_blank" rel="noopener">contact us on WhatsApp</a>.';
+  } finally {
+    submit.disabled = false;
+    submit.innerHTML = originalLabel;
+  }
 });
 
 const chatLauncher = document.querySelector("#chat-launcher");

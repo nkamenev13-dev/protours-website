@@ -1,0 +1,12 @@
+{
+  "name": "protours-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ProTours landing page and Telegram lead receiver",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
