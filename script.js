@@ -143,15 +143,6 @@ originalBenefits.forEach((card) => {
   benefitsMarquee.append(clone);
 });
 
-const scrollBenefits = (direction) => {
-  const animation = benefitsMarquee.getAnimations()[0];
-  if (!animation) return;
-  animation.currentTime = Math.max(0, animation.currentTime + direction * 3500);
-};
-
-document.querySelector(".benefits-prev").addEventListener("click", () => scrollBenefits(-1));
-document.querySelector(".benefits-next").addEventListener("click", () => scrollBenefits(1));
-
 const countryCode = document.querySelector("#country-code");
 const phoneInput = document.querySelector("#phone");
 countryCode.addEventListener("change", () => {
