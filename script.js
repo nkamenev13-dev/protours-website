@@ -53,16 +53,19 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
   scheduleToggle.type = "button";
   scheduleToggle.className = "schedule-toggle";
   scheduleToggle.setAttribute("aria-controls", scheduleId);
-  scheduleToggle.setAttribute("aria-expanded", "false");
+  scheduleToggle.setAttribute("aria-expanded", "true");
   scheduleToggle.innerHTML = "<span>Schedule</span><b aria-hidden=\"true\">+</b>";
   schedulePanel.id = scheduleId;
   schedulePanel.className = "tour-tab-panel schedule-panel";
-  schedulePanel.hidden = true;
+  schedulePanel.hidden = false;
   schedulePanel.append(source.querySelector(".timeline").cloneNode(true));
   const note = source.querySelector(".schedule-note");
   const included = source.querySelector(".inclusions-grid");
   if (note) schedulePanel.append(note.cloneNode(true));
-  if (included) schedulePanel.append(included.cloneNode(true));
+  schedulePanel.querySelectorAll("time").forEach((time) => {
+    const parts = time.textContent.split(/[–—-]/);
+    time.textContent = parts[parts.length - 1].trim();
+  });
 
   scheduleToggle.addEventListener("click", () => {
     const isOpen = scheduleToggle.getAttribute("aria-expanded") === "true";
@@ -70,7 +73,26 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
     schedulePanel.hidden = isOpen;
   });
 
-  tabs.append(carousel, scheduleToggle, schedulePanel);
+  const includedToggle = document.createElement("button");
+  const includedPanel = document.createElement("div");
+  const includedId = `tour-${cardIndex}-included`;
+  includedToggle.type = "button";
+  includedToggle.className = "schedule-toggle included-toggle";
+  includedToggle.setAttribute("aria-controls", includedId);
+  includedToggle.setAttribute("aria-expanded", "false");
+  includedToggle.innerHTML = "<span>Included</span><b aria-hidden=\"true\">+</b>";
+  includedPanel.id = includedId;
+  includedPanel.className = "tour-tab-panel included-panel";
+  includedPanel.hidden = true;
+  if (included) includedPanel.append(included.cloneNode(true));
+
+  includedToggle.addEventListener("click", () => {
+    const isOpen = includedToggle.getAttribute("aria-expanded") === "true";
+    includedToggle.setAttribute("aria-expanded", String(!isOpen));
+    includedPanel.hidden = isOpen;
+  });
+
+  tabs.append(carousel, scheduleToggle, schedulePanel, includedToggle, includedPanel);
 });
 
 const benefitsTrack = document.querySelector(".benefits-grid");
@@ -105,11 +127,7 @@ const startBenefits = () => {
     }
   }, 4000);
 };
-const pauseBenefits = () => clearInterval(benefitsAutoplay);
 startBenefits();
-benefitsTrack.addEventListener("mouseenter", pauseBenefits);
-benefitsTrack.addEventListener("mouseleave", startBenefits);
-benefitsTrack.addEventListener("touchstart", pauseBenefits, { once: true, passive: true });
 
 const countryCode = document.querySelector("#country-code");
 const phoneInput = document.querySelector("#phone");
