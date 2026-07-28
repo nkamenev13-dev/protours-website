@@ -1,6 +1,7 @@
 # Local previews and development artifacts
 *-preview.png
 *-updated.png
+*-original.png
 
 # OS and editor files
 .DS_Store
