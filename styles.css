@@ -68,3 +68,6 @@
 
 .form-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:0 0 30px;padding:0 0 28px;border-bottom:1px solid var(--line)}.form-steps article{display:flex;gap:11px}.form-steps article>span{display:flex;flex:0 0 28px;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--gold);font-family:"Fraunces",serif;font-size:14px}.form-steps strong{display:block;font-size:12px;line-height:1.3}.form-steps p{margin:6px 0 0;color:#687370;font-size:10px;line-height:1.45}
 @media(max-width:600px){.form-steps{grid-template-columns:1fr;gap:17px}.form-steps p{font-size:11px}}
+
+/* One warm, natural colour grade across every site photograph. */
+.hero-image,.gallery-item img{filter:saturate(.88) contrast(1.045) brightness(.98) sepia(.055)}.gallery-item img{transition:transform .45s ease,filter .3s ease}.gallery-item:hover img{transform:scale(1.025);filter:saturate(.92) contrast(1.05) brightness(1.025) sepia(.045)}.gallery-lightbox img{filter:saturate(.88) contrast(1.045) brightness(.98) sepia(.055)}
