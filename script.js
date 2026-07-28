@@ -144,6 +144,17 @@ originalBenefits.forEach((card) => {
   benefitsMarquee.append(clone);
 });
 
+setInterval(() => {
+  const hasVisibleCard = [...benefitsMarquee.querySelectorAll("article")].some((card) => {
+    const bounds = card.getBoundingClientRect();
+    return bounds.right > 0 && bounds.left < window.innerWidth;
+  });
+  if (!hasVisibleCard) {
+    const animation = benefitsMarquee.getAnimations?.()[0];
+    if (animation) animation.currentTime = 0;
+  }
+}, 800);
+
 const countryCode = document.querySelector("#country-code");
 const phoneInput = document.querySelector("#phone");
 countryCode.addEventListener("change", () => {
