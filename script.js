@@ -46,6 +46,16 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
   };
   previous.addEventListener("click", () => showPhoto(currentPhoto - 1));
   next.addEventListener("click", () => showPhoto(currentPhoto + 1));
+  let touchStartX = 0;
+  viewport.addEventListener("touchstart", (event) => {
+    touchStartX = event.changedTouches[0].clientX;
+  }, { passive: true });
+  viewport.addEventListener("touchend", (event) => {
+    const distance = event.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(distance) < 35) return;
+    event.preventDefault();
+    showPhoto(currentPhoto + (distance < 0 ? 1 : -1));
+  }, { passive: false });
 
   const scheduleToggle = document.createElement("button");
   const schedulePanel = document.createElement("div");
@@ -96,6 +106,18 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
 });
 
 const benefitsTrack = document.querySelector(".benefits-grid");
+const originalBenefits = [...benefitsTrack.children];
+const benefitsGap = parseFloat(getComputedStyle(benefitsTrack).columnGap) || 24;
+const benefitsLoopWidth = originalBenefits.reduce(
+  (total, card) => total + card.getBoundingClientRect().width,
+  benefitsGap * originalBenefits.length
+);
+originalBenefits.forEach((card) => {
+  const clone = card.cloneNode(true);
+  clone.setAttribute("aria-hidden", "true");
+  benefitsTrack.append(clone);
+});
+
 const scrollBenefits = (direction) => {
   const card = benefitsTrack.querySelector("article");
   benefitsTrack.scrollBy({
@@ -107,35 +129,31 @@ const scrollBenefits = (direction) => {
 document.querySelector(".benefits-prev").addEventListener("click", () => scrollBenefits(-1));
 document.querySelector(".benefits-next").addEventListener("click", () => scrollBenefits(1));
 
-benefitsTrack.addEventListener("scroll", () => {
-  const atStart = benefitsTrack.scrollLeft < 5;
-  const atEnd = benefitsTrack.scrollLeft + benefitsTrack.clientWidth >= benefitsTrack.scrollWidth - 5;
-  document.querySelector(".benefits-prev").disabled = atStart;
-  document.querySelector(".benefits-next").disabled = atEnd;
-});
-document.querySelector(".benefits-prev").disabled = true;
-
-let benefitsAutoplay;
-const startBenefits = () => {
-  clearInterval(benefitsAutoplay);
-  benefitsAutoplay = setInterval(() => {
-    const atEnd = benefitsTrack.scrollLeft + benefitsTrack.clientWidth >= benefitsTrack.scrollWidth - 5;
-    if (atEnd) {
-      benefitsTrack.scrollTo({ left: 0, behavior: "smooth" });
-    } else {
-      scrollBenefits(1);
-    }
-  }, 4000);
+let previousFrame = performance.now();
+const moveBenefits = (timestamp) => {
+  const elapsed = Math.min(timestamp - previousFrame, 40);
+  previousFrame = timestamp;
+  benefitsTrack.scrollLeft += elapsed * 0.035;
+  if (benefitsTrack.scrollLeft >= benefitsLoopWidth) {
+    benefitsTrack.scrollLeft -= benefitsLoopWidth;
+  }
+  requestAnimationFrame(moveBenefits);
 };
-startBenefits();
+requestAnimationFrame(moveBenefits);
 
 const countryCode = document.querySelector("#country-code");
 const phoneInput = document.querySelector("#phone");
 countryCode.addEventListener("change", () => {
   phoneInput.placeholder = countryCode.selectedOptions[0].dataset.placeholder;
+  phoneInput.value = "";
 });
 phoneInput.addEventListener("input", () => {
-  const groupSizes = countryCode.selectedOptions[0].dataset.placeholder
+  const selectedCountry = countryCode.selectedOptions[0];
+  if (selectedCountry.dataset.free === "true") {
+    phoneInput.value = phoneInput.value.replace(/[^\d+().\-\s]/g, "").slice(0, 24);
+    return;
+  }
+  const groupSizes = selectedCountry.dataset.placeholder
     .split(" ")
     .map((group) => group.length);
   const maxLength = groupSizes.reduce((total, size) => total + size, 0);
@@ -149,6 +167,14 @@ phoneInput.addEventListener("input", () => {
   phoneInput.value = groups.join(" ");
 });
 
+const guestsInput = form.querySelector("[name=\"guests\"]");
+form.querySelector(".guest-minus").addEventListener("click", () => {
+  guestsInput.value = Math.max(Number(guestsInput.min), Number(guestsInput.value) - 1);
+});
+form.querySelector(".guest-plus").addEventListener("click", () => {
+  guestsInput.value = Math.min(Number(guestsInput.max), Number(guestsInput.value) + 1);
+});
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(form);
@@ -159,7 +185,7 @@ form.addEventListener("submit", (event) => {
     `Preferred date: ${data.get("date")}`,
     `Guests: ${data.get("guests")}`,
     `Name: ${data.get("name")}`,
-    `Phone / WhatsApp: ${data.get("country-code")} ${data.get("phone")}`,
+    `Phone / WhatsApp: ${`${data.get("country-code")} ${data.get("phone")}`.trim()}`,
   ].join("\n");
   const status = form.querySelector(".form-status");
   status.textContent = "Opening WhatsApp so you can send your request…";

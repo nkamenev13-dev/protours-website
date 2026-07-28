@@ -34,7 +34,7 @@
       <div class="hero-content">
         <p class="eyebrow light">Small-group tours</p>
         <h1>Discover France<br>beyond Paris.</h1>
-        <p class="hero-copy">Remarkable small-group day trips from Paris from €150 per person. Hotel pickup, comfortable transport and an English-speaking driver-host included.</p>
+        <p class="hero-copy">Discover France in a small group that feels more like travelling with friends—relaxed, personal and full of memorable places along the way.</p>
         <div class="hero-actions">
           <a class="button" href="#tours">Explore our tours</a>
         </div>
@@ -90,7 +90,7 @@
         </article>
 
         <article class="tour-card featured">
-          <div class="tour-photo mont"><span class="duration">Full day</span><span class="popular">Most popular</span></div>
+          <div class="tour-photo mont"><span class="duration">Full day</span></div>
           <div class="tour-body">
             <p class="card-kicker">A medieval icon</p>
             <h3><span class="tour-type">Small-group</span>Mont Saint-Michel Tour</h3>
@@ -106,7 +106,7 @@
         </article>
 
         <article class="tour-card">
-          <div class="tour-photo combo"><span class="duration">Extended day</span></div>
+          <div class="tour-photo combo"><span class="duration">Extended day</span><span class="popular">Most popular</span></div>
           <div class="tour-body">
             <p class="card-kicker">The ultimate Normandy day</p>
             <h3><span class="tour-type">Small-group</span>Mont Saint-Michel + Étretat Tour</h3>
@@ -356,7 +356,13 @@
         </label>
         <div class="form-row">
           <label>Preferred date<input type="date" name="date" required></label>
-          <label>Guests<input type="number" name="guests" min="1" max="7" value="1" required></label>
+          <label>Guests
+            <span class="guest-stepper">
+              <button type="button" class="guest-step guest-minus" aria-label="Remove one guest">−</button>
+              <input type="number" name="guests" min="1" max="7" value="1" readonly required>
+              <button type="button" class="guest-step guest-plus" aria-label="Add one guest">+</button>
+            </span>
+          </label>
         </div>
         <label>Your name<input type="text" name="name" autocomplete="name" placeholder="Jane Smith" required></label>
         <label>WhatsApp / phone
@@ -373,6 +379,7 @@
               <option value="+31" data-placeholder="6 1234 5678">Netherlands +31</option>
               <option value="+41" data-placeholder="79 123 45 67">Switzerland +41</option>
               <option value="+971" data-placeholder="50 123 4567">UAE +971</option>
+              <option value="" data-placeholder="+ country code and number" data-free="true">Other country</option>
             </select>
             <input type="tel" name="phone" id="phone" autocomplete="tel-national" inputmode="tel" placeholder="6 12 34 56 78" required>
           </span>
