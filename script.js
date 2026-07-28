@@ -11,6 +11,16 @@ document.querySelectorAll("[data-tour]").forEach((button) => {
   });
 });
 
+document.querySelectorAll(".itinerary-link").forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    const itinerary = document.querySelector(link.getAttribute("href"));
+    if (!itinerary) return;
+    itinerary.open = true;
+    itinerary.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const status = form.querySelector(".form-status");
