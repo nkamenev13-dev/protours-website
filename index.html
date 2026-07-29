@@ -16,6 +16,23 @@
     gtag('js', new Date());
     gtag('config', 'AW-18355996225');
   </script>
+  <!-- Event snippet for lead form submissions -->
+  <script>
+    function gtag_report_conversion(url) {
+      var callback = function () {
+        if (typeof(url) != 'undefined') {
+          window.location = url;
+        }
+      };
+      gtag('event', 'conversion', {
+        'send_to': 'AW-18355996225/hG09CMKc4dgcEMGM6bBE',
+        'value': 1.0,
+        'currency': 'EUR',
+        'event_callback': callback
+      });
+      return false;
+    }
+  </script>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -478,6 +495,6 @@
     <small>WhatsApp will open in a new window. We normally reply within 1–2 hours.</small>
   </aside>
 
-  <script src="script.js?v=20260729-1"></script>
+  <script src="script.js?v=20260729-2"></script>
 </body>
 </html>

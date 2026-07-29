@@ -198,6 +198,9 @@ form.addEventListener("submit", async (event) => {
     const result = await response.json();
     if (!response.ok || !result.ok) throw new Error(result.error || "Request failed.");
 
+    if (typeof window.gtag_report_conversion === "function") {
+      window.gtag_report_conversion();
+    }
     status.classList.add("is-success");
     status.textContent = "Thank you! Your request has been sent. We’ll contact you within 1–2 hours.";
     form.reset();
