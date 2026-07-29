@@ -72,3 +72,7 @@
 /* One warm, natural colour grade across every site photograph. */
 .hero-image,.gallery-item img{filter:saturate(.88) contrast(1.045) brightness(.98) sepia(.055)}.gallery-item img{transition:transform .45s ease,filter .3s ease}.gallery-item:hover img{transform:scale(1.025);filter:saturate(.92) contrast(1.05) brightness(1.025) sepia(.045)}.gallery-lightbox img{filter:saturate(.88) contrast(1.045) brightness(.98) sepia(.055)}
 .form-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}.submit-button:disabled{cursor:wait;opacity:.7}.form-status.is-success{color:#176b4b}.form-status.is-error{color:#9c2f2f}.form-status a{color:inherit;text-decoration:underline}
+
+/* Static benefits grid: two columns and three rows. */
+.benefits-grid{display:block;min-height:0;overflow:visible;margin-right:0;padding:0;cursor:default;touch-action:auto}.benefits-marquee{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;width:100%;min-width:0;padding:0;animation:none!important;transform:none!important}.benefits-grid article{display:block;min-height:240px;flex:auto;user-select:auto}.benefits-grid article *{user-select:auto}
+@media(max-width:600px){.benefits-grid{margin-right:0}.benefits-marquee{grid-template-columns:1fr}.benefits-grid article{min-height:0;flex:auto}}

@@ -91,11 +91,11 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
   scheduleToggle.type = "button";
   scheduleToggle.className = "schedule-toggle";
   scheduleToggle.setAttribute("aria-controls", scheduleId);
-  scheduleToggle.setAttribute("aria-expanded", "true");
+  scheduleToggle.setAttribute("aria-expanded", "false");
   scheduleToggle.innerHTML = "<span>Schedule</span><b aria-hidden=\"true\">+</b>";
   schedulePanel.id = scheduleId;
   schedulePanel.className = "tour-tab-panel schedule-panel";
-  schedulePanel.hidden = false;
+  schedulePanel.hidden = true;
   schedulePanel.append(source.querySelector(".timeline").cloneNode(true));
   const note = source.querySelector(".schedule-note");
   const included = source.querySelector(".inclusions-grid");
@@ -134,55 +134,6 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
   card.insertBefore(carousel, card.querySelector(".tour-body"));
   tabs.append(scheduleToggle, schedulePanel, includedToggle, includedPanel);
 });
-
-const benefitsTrack = document.querySelector(".benefits-grid");
-const benefitsMarquee = benefitsTrack.querySelector(".benefits-marquee");
-const originalBenefits = [...benefitsMarquee.children];
-originalBenefits.forEach((card) => {
-  const clone = card.cloneNode(true);
-  clone.setAttribute("aria-hidden", "true");
-  benefitsMarquee.append(clone);
-});
-
-const getBenefitsAnimation = () => benefitsMarquee.getAnimations?.()[0];
-benefitsTrack.addEventListener("mouseenter", () => getBenefitsAnimation()?.pause());
-benefitsTrack.addEventListener("mouseleave", () => getBenefitsAnimation()?.play());
-
-let benefitsTouchStartX = 0;
-let benefitsTouchStartY = 0;
-let benefitsAnimationStartTime = 0;
-benefitsTrack.addEventListener("touchstart", (event) => {
-  const animation = getBenefitsAnimation();
-  if (!animation) return;
-  benefitsTouchStartX = event.changedTouches[0].clientX;
-  benefitsTouchStartY = event.changedTouches[0].clientY;
-  benefitsAnimationStartTime = Number(animation.currentTime) || 0;
-  animation.pause();
-}, { passive: true });
-benefitsTrack.addEventListener("touchmove", (event) => {
-  const animation = getBenefitsAnimation();
-  if (!animation) return;
-  const deltaX = event.changedTouches[0].clientX - benefitsTouchStartX;
-  const deltaY = event.changedTouches[0].clientY - benefitsTouchStartY;
-  if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
-  event.preventDefault();
-  const duration = Number(animation.effect.getTiming().duration) || 120000;
-  const loopDistance = Math.max(benefitsMarquee.scrollWidth / 2, 1);
-  animation.currentTime = Math.max(0, benefitsAnimationStartTime - deltaX * duration / loopDistance);
-}, { passive: false });
-benefitsTrack.addEventListener("touchend", () => getBenefitsAnimation()?.play(), { passive: true });
-benefitsTrack.addEventListener("touchcancel", () => getBenefitsAnimation()?.play(), { passive: true });
-
-setInterval(() => {
-  const hasVisibleCard = [...benefitsMarquee.querySelectorAll("article")].some((card) => {
-    const bounds = card.getBoundingClientRect();
-    return bounds.right > 0 && bounds.left < window.innerWidth;
-  });
-  if (!hasVisibleCard) {
-    const animation = getBenefitsAnimation();
-    if (animation) animation.currentTime = 0;
-  }
-}, 800);
 
 const countryCode = document.querySelector("#country-code");
 const phoneInput = document.querySelector("#phone");
