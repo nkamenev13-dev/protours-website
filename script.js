@@ -83,8 +83,6 @@ document.querySelectorAll(".tour-tabs").forEach((tabs, cardIndex) => {
     event.preventDefault();
     showPhoto(currentPhoto + (distance < 0 ? 1 : -1));
   }, { passive: false });
-  setInterval(() => showPhoto(currentPhoto + 1), 6000 + cardIndex * 350);
-
   const scheduleToggle = document.createElement("button");
   const schedulePanel = document.createElement("div");
   const scheduleId = `tour-${cardIndex}-schedule`;
