@@ -1,6 +1,8 @@
 import { cp, mkdir, writeFile } from 'node:fs/promises';
 import { copy, email, registry, tourDetails } from './content.mjs';
 import { importTours, titleLimit, summaryLimit } from './tour-sheet.mjs';
+import { privacy } from './privacy.mjs';
+import { offer } from './offer.mjs';
 
 const root = new URL('./dist/', import.meta.url);
 const defaultLanguage = 'en';
@@ -69,7 +71,7 @@ function layout(lang, page, title, description, main) {
   <main id="main">${main}</main>
   <footer class="footer"><div class="wrap footer-row">
     <div><a class="brand" href="index.html">${brand}</a><p>${t.footer} · ${t.tourLanguage}</p></div>
-    <div><a href="about.html">${t.nav[2]}</a><a href="mailto:${email}">${email}</a></div>
+    <div><a href="about.html">${t.nav[2]}</a><a href="privacy.html">${privacy[lang].title}</a><a href="offer.html">${offer[lang].title}</a><a href="mailto:${email}">${email}</a></div>
   </div></footer>
 </body>
 </html>`;
@@ -240,6 +242,7 @@ function quoteForm(t, tour) {
   const prices = Object.keys(tiers ?? {});
   const pricing = prices.length > 0;
   const french = t === copy.fr;
+  const policy = privacy[french ? 'fr' : 'en'];
   const travellerInput = `<input id="travellers" name="travellers" type="number" min="${minimum}"${pricing ? ` max="${Math.max(...prices)}"` : ''}${tour ? ` value="${minimum}"` : ''} step="1" required>`;
   return `<form class="${tour ? 'form' : 'details form'}" data-quote data-email="${email}" data-subject="${subject}" data-tour-language="${t.defaultTourLanguage}"${tourData}>
       ${tour ? '' : `<label class="full">${destination}<select name="trip" required><option value="">${t.choose}</option>${t.cards.map(([title], i) => {
@@ -263,13 +266,21 @@ function quoteForm(t, tour) {
       <label>${phone}<input name="phone" type="tel" autocomplete="tel" maxlength="40" required></label>
       <label class="full">${address}<input name="email" type="email" autocomplete="email" maxlength="160" required></label>
       ${tour ? '' : `<label class="full">${comments}<textarea name="notes" rows="3" maxlength="700"></textarea></label>`}
-      <div class="full"><button type="submit" class="button" disabled>${t.mailButton} ${arrow}</button><p id="mail-help" class="form-help">${t.mailHelp}</p></div>
+      <div class="full"><button type="submit" class="button" disabled>${t.mailButton} ${arrow}</button><p id="mail-help" class="form-help">${t.mailHelp}</p><p class="form-help"><a href="privacy.html">${policy.title}</a></p></div>
       ${tour ? '</fieldset>' : ''}
       <div class="full form-status" hidden><p role="status">${t.mailStatus} <a href="mailto:${email}">${email}</a>.</p>
         <textarea readonly aria-label="${subject}" rows="5"></textarea>
         <button type="button" class="button secondary" data-copy data-copied="${t.copied}">${t.copyRequest}</button>
       </div>
     </form>`;
+}
+
+function legalPage({ title, updated, intro, sections }) {
+  return `<section class="section wrap tour-page">
+    <h1>${title}</h1><p>${updated}</p><p class="lede">${intro}</p>
+    <div class="tour-sections">${sections.map(([heading, body]) =>
+      `<section class="tour-section"><h2>${heading}</h2>${body}</section>`).join('')}</div>
+  </section>`;
 }
 
 for (const [lang, t] of Object.entries(copy)) {
@@ -280,6 +291,8 @@ for (const [lang, t] of Object.entries(copy)) {
     ['destinations', t.nav[1], t.catalogIntro, destinations(t, lang)],
     ['about', t.nav[2], t.aboutIntro, about(t)],
     ['quote', t.nav[3], t.quoteIntro, quotePage(t)],
+    ['privacy', privacy[lang].title, privacy[lang].description, legalPage(privacy[lang])],
+    ['offer', offer[lang].title, offer[lang].description, legalPage(offer[lang])],
     ...t.cards.map(([name, summary], i) => {
       const slug = slugs[i];
       const title = importedTours[lang]?.[slug] ? name : slug === 'champagne' ? t.tripTitle : name;
@@ -293,10 +306,13 @@ for (const [lang, t] of Object.entries(copy)) {
 
 await cp(new URL('./assets/', import.meta.url), new URL('assets/', root), { recursive: true });
 const t = copy[defaultLanguage];
-const start = layout(defaultLanguage, 'index', t.slider.slides[0][0], t.intro, home(t, defaultLanguage))
+const rootPage = html => html
   .replaceAll('../assets/', 'assets/').replace('../fr/', 'fr/')
   .replaceAll(/href="([a-z0-9-]+\.html(?:\?[^"]*)?)"/g, `href="${defaultLanguage}/$1"`);
-await writeFile(new URL('index.html', root), start);
+await writeFile(new URL('index.html', root), rootPage(layout(defaultLanguage, 'index', t.slider.slides[0][0], t.intro, home(t, defaultLanguage))));
+for (const [route, document] of [['privacy', privacy.en], ['offer', offer.en]]) {
+  await writeFile(new URL(`${route}.html`, root), rootPage(layout(defaultLanguage, route, document.title, document.description, legalPage(document))));
+}
 
 const legacy = new URL('ru/', root);
 await mkdir(legacy, { recursive: true });
