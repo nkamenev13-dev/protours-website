@@ -1,11 +1,1 @@
-# Local previews and development artifacts
-*-preview.png
-*-updated.png
-*-original.png
-*-fixed*.png
-
-# OS and editor files
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
+dist/
