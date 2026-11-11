@@ -96,7 +96,7 @@ h3 { font-size: 1.2rem; letter-spacing: -.015em; }
 .hero-slide .lede { margin-bottom: .85rem; }
 .hero-slide-note { color: var(--muted); font-size: .82rem; font-weight: 650; letter-spacing: .045em; margin-bottom: 1.6rem; }
 .hero-slide .button { margin-top: auto; border-radius: 99px; padding-inline: 1.2rem; }
-.hero-slide-photo { aspect-ratio: 1; overflow: hidden; border-radius: 14px; background: var(--soft); }
+.hero-slide-photo { aspect-ratio: 1; overflow: hidden; border-radius: 14px; background: var(--soft); touch-action: pan-y pinch-zoom; }
 .hero-slide-paris img { object-position: 83% center; }
 .carousel-controls:not([hidden]) { display: grid; grid-template-columns: 1fr auto 1fr; gap: .5rem; align-items: center; padding-block: .75rem 1rem; }
 .carousel-count { color: var(--muted); font-size: .82rem; font-variant-numeric: tabular-nums; font-weight: 650; }
@@ -132,7 +132,7 @@ h3 { font-size: 1.2rem; letter-spacing: -.015em; }
   .card-art .photo-controls { opacity: 0; }
   .card-art:hover .photo-controls, .card-art:focus-within .photo-controls { opacity: 1; }
 }
-.card-copy { flex: 1; display: flex; flex-direction: column; align-items: start; padding: clamp(.95rem, 2.2vw, 1.55rem); }
+.card-copy { position: relative; flex: 1; display: flex; flex-direction: column; align-items: start; padding: clamp(.95rem, 2.2vw, 1.55rem); }
 .card :is(h2, h3) { font-size: clamp(1.35rem, 2.2vw, 1.85rem); margin-bottom: .55rem; letter-spacing: -.025em; }
 .card-copy :is(h2, h3), .card-summary { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
 .card-copy :is(h2, h3) { -webkit-line-clamp: 2; min-height: 2lh; }
@@ -153,7 +153,10 @@ h3 { font-size: 1.2rem; letter-spacing: -.015em; }
 .trip .tour-facts { max-width: 26rem; margin-bottom: 1.35rem; }
 .catalogue-transfer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
 .catalogue-transfer p { margin: 0; color: var(--muted); }
-.card-link { margin-top: auto; color: var(--red); font-size: .9rem; font-weight: 590; text-decoration: none; }
+.card-link { margin-top: auto; }
+.card-link::after { content: ""; position: absolute; inset: 0; }
+.card-copy:hover .card-link { border-color: var(--red); color: var(--red); }
+.catalogue-action { display: flex; justify-content: center; margin-top: 1.65rem; }
 .card:focus-within { outline: 2px solid var(--red); outline-offset: 3px; }
 .back-link, .text-link { color: var(--red); font-weight: 590; text-underline-offset: .25em; }
 .back-link { display: inline-block; margin-bottom: 1.65rem; }
@@ -221,6 +224,11 @@ h3 { font-size: 1.2rem; letter-spacing: -.015em; }
 .form label { font-size: .88rem; font-weight: 580; }
 .full { grid-column: 1 / -1; }
 .form :is(input, select, textarea) { display: block; width: 100%; margin-top: .28rem; min-height: 2.7rem; background: var(--paper); color: var(--ink); border: 1px solid #a9a7a3; border-radius: 5px; padding: .48rem .58rem; font: inherit; font-size: 1rem; }
+.traveller-stepper { display: grid; grid-template-columns: 2.75rem minmax(2rem, 1fr) 2.75rem; gap: .2rem; margin-top: .28rem; }
+.traveller-stepper input { margin: 0; text-align: center; appearance: textfield; }
+.traveller-stepper input::-webkit-inner-spin-button { appearance: none; }
+.traveller-stepper button { min-height: 2.75rem; padding: 0; border: 1px solid var(--line); border-radius: 5px; background: var(--white); color: var(--ink); font: 650 1.25rem/1 system-ui; cursor: pointer; }
+.traveller-stepper button:disabled { opacity: .45; cursor: default; }
 .form textarea { resize: vertical; }
 .form-help { color: var(--muted); margin: .55rem 0 0; font-size: .84rem; }
 .form-status .button { margin-top: .75rem; }

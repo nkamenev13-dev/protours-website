@@ -49,6 +49,21 @@ if (carousel) {
     event.preventDefault();
     showSlide(active + (event.key === 'ArrowLeft' ? -1 : 1));
   });
+  let swipe;
+  carousel.addEventListener('pointerdown', event => {
+    if (!event.isPrimary || event.pointerType === 'mouse' || !event.target.closest('.hero-slide-photo')) return;
+    swipe = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  });
+  carousel.addEventListener('pointercancel', event => {
+    if (swipe?.id === event.pointerId) swipe = undefined;
+  });
+  carousel.addEventListener('pointerup', event => {
+    if (swipe?.id !== event.pointerId) return;
+    const dx = event.clientX - swipe.x;
+    const dy = event.clientY - swipe.y;
+    swipe = undefined;
+    if (Math.abs(dx) >= 45 && Math.abs(dx) > Math.abs(dy) * 1.25) showSlide(active - Math.sign(dx));
+  });
   controls.hidden = false;
 }
 
@@ -78,8 +93,36 @@ if (form) {
   dateInput.min = date;
   const travellers = form.elements.namedItem('travellers');
   const priceBox = form.querySelector('[data-prices]');
+  const tiers = priceBox ? JSON.parse(priceBox.dataset.prices) : null;
+  const stepper = form.querySelector('[data-traveller-stepper]');
+  if (stepper) {
+    const buttons = [...stepper.querySelectorAll('[data-step]')];
+    const available = tiers ? Object.keys(tiers).map(Number).sort((a, b) => a - b) : null;
+    const min = Number(travellers.min);
+    function nextCount(direction) {
+      const count = travellers.valueAsNumber;
+      if (!Number.isFinite(count)) return min;
+      if (available) {
+        return direction < 0 ? available.findLast(size => size < count) : available.find(size => size > count);
+      }
+      const next = direction < 0 ? Math.ceil(count) - 1 : Math.floor(count) + 1;
+      return next >= min ? next : undefined;
+    }
+    function updateButtons() {
+      for (const button of buttons) button.disabled = nextCount(Number(button.dataset.step)) === undefined;
+    }
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        const count = nextCount(Number(button.dataset.step));
+        if (count === undefined) return;
+        travellers.value = String(count);
+        travellers.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    }
+    travellers.addEventListener('input', updateButtons);
+    updateButtons();
+  }
   if (priceBox) {
-    const tiers = JSON.parse(priceBox.dataset.prices);
     const person = priceBox.querySelector('[data-person-price]');
     const total = priceBox.querySelector('[data-total-price]');
     const money = new Intl.NumberFormat(document.documentElement.lang, {
@@ -125,7 +168,7 @@ if (form) {
     const { tour, tourLabel } = form.dataset;
     const lines = tour ? [`${tourLabel}: ${tour}`] : [];
     for (const label of fields) {
-      const control = label.querySelector('input, select, textarea');
+      const control = label.control;
       const value = control.selectedOptions?.[0]?.textContent ?? control.value.trim();
       if (value) lines.push(`${label.firstChild.textContent.trim()}: ${value}`);
     }

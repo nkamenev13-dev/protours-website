@@ -7,7 +7,7 @@ const defaultLanguage = 'en';
 const navigation = ['index', 'destinations', 'about'];
 const slugs = [
   'champagne', 'rouen-etretat', 'etretat-deauville-trouville', 'mont-saint-michel-calvados',
-  'loire', 'versailles', 'giverny', 'bruges', 'transfer',
+  'loire', 'bruges', 'transfer',
 ];
 const tourImages = {
   'rouen-etretat': ['rouen'],
@@ -106,8 +106,9 @@ function home(t, lang) {
   return `${homeSlider(t)}
   <ul class="facts wrap">${t.facts.map((fact, i) => `<li><span aria-hidden="true">0${i + 1}</span>${fact}</li>`).join('')}</ul>
   <div class="section-band"><section class="section wrap">
-    <div class="section-heading"><div>${kicker(t.catalogLabel)}<h2>${t.moreDestinations}</h2></div>${button('destinations.html', t.tours, true)}</div>
-    <div class="card-grid">${['loire', 'giverny', 'bruges'].map(slug => destinationCard(t, lang, slugs.indexOf(slug), 'h3')).join('')}</div>
+    <div class="section-heading"><div>${kicker(t.catalogLabel)}<h2>${t.moreDestinations}</h2></div></div>
+    <div class="card-grid">${['loire', 'etretat-deauville-trouville', 'bruges'].map(slug => destinationCard(t, lang, slugs.indexOf(slug), 'h3')).join('')}</div>
+    <div class="catalogue-action">${button('destinations.html', t.otherTours, true)}</div>
   </section></div>
   <section class="section wrap benefits">
     <h2>${t.benefitsTitle}</h2>
@@ -144,7 +145,7 @@ function destinationCard(t, lang, i, heading = 'h2') {
   return `<article class="card">
     ${gallery(t, lang, slug, title, true)}
     <div class="card-copy"><${heading}>${imported ? title : shortText(title, titleLimit)}</${heading}>${tourFacts(t, lang, slug)}<p class="card-summary">${imported ? desc : shortText(desc, summaryLimit)}</p>
-      <a class="card-link" href="${slug}.html" aria-label="${t.cardAction} — ${title}">${t.cardAction} ${arrow}</a></div>
+      <a class="button secondary card-link" href="${slug}.html" aria-label="${t.cardAction} — ${title}">${t.cardAction} ${arrow}</a></div>
   </article>`;
 }
 
@@ -239,13 +240,19 @@ function quoteForm(t, tour) {
   const prices = Object.keys(tiers ?? {});
   const pricing = prices.length > 0;
   const french = t === copy.fr;
+  const travellerInput = `<input id="travellers" name="travellers" type="number" min="${minimum}"${pricing ? ` max="${Math.max(...prices)}"` : ''}${tour ? ` value="${minimum}"` : ''} step="1" required>`;
   return `<form class="${tour ? 'form' : 'details form'}" data-quote data-email="${email}" data-subject="${subject}" data-tour-language="${t.defaultTourLanguage}"${tourData}>
       ${tour ? '' : `<label class="full">${destination}<select name="trip" required><option value="">${t.choose}</option>${t.cards.map(([title], i) => {
         const slug = slugs[i];
         return `<option value="${slug}" data-min-travellers="${tourDetails[slug]?.minimum ?? 1}">${title}</option>`;
       }).join('')}<option value="other">${t.other}</option></select></label>`}
       <label>${date}<input name="date" type="date" required></label>
-      <label>${travellers}<input name="travellers" type="number" min="${minimum}"${pricing ? ` max="${Math.max(...prices)}" value="${minimum}"` : ''} step="1" required></label>
+      ${tour ? `<div class="traveller-field"><label for="travellers">${travellers}</label>
+        <div class="traveller-stepper" data-traveller-stepper>
+          <button type="button" data-step="-1" aria-label="${french ? 'Retirer un participant' : 'Remove one traveller'}" disabled>−</button>
+          ${travellerInput}
+          <button type="button" data-step="1" aria-label="${french ? 'Ajouter un participant' : 'Add one traveller'}" disabled>+</button>
+        </div></div>` : `<label>${travellers}${travellerInput}</label>`}
       ${pricing ? `<div class="full booking-price" data-prices='${JSON.stringify(tiers)}'>
         <dl><div><dt>${french ? 'Prix par personne' : 'Price per person'}</dt><dd data-person-price>–</dd></div>
         <div><dt>${french ? 'Total du groupe' : 'Group total'}</dt><dd data-total-price>–</dd></div></dl>
