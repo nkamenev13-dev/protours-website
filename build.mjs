@@ -62,6 +62,7 @@ function layout(lang, page, title, description, main) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${description}">
+  ${lang === defaultLanguage && page === 'index' ? '<meta name="google-site-verification" content="6td7h4nDP4jXG967yhCtc4eShquc1vh2AevQ4cG_kHg">' : ''}
   <link rel="canonical" href="${canonicalUrl(lang, page)}">
   ${Object.keys(copy).map(language => `<link rel="alternate" hreflang="${language}" href="${canonicalUrl(language, page)}">`).join('\n  ')}
   <link rel="alternate" hreflang="x-default" href="${canonicalUrl(defaultLanguage, page)}">
