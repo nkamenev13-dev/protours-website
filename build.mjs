@@ -6,6 +6,12 @@ import { offer } from './offer.mjs';
 
 const root = new URL('./dist/', import.meta.url);
 const defaultLanguage = 'en';
+const siteOrigin = 'https://www.protours.fr';
+const canonicalUrl = (lang, page) => new URL(
+  lang === defaultLanguage && page === 'index' ? '/' : `/${lang}/${page}.html`,
+  siteOrigin,
+).href;
+const sitemapUrls = [];
 const navigation = ['index', 'destinations', 'about'];
 const slugs = [
   'champagne', 'rouen-etretat', 'etretat-deauville-trouville', 'mont-saint-michel-calvados',
@@ -56,6 +62,9 @@ function layout(lang, page, title, description, main) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${description}">
+  <link rel="canonical" href="${canonicalUrl(lang, page)}">
+  ${Object.keys(copy).map(language => `<link rel="alternate" hreflang="${language}" href="${canonicalUrl(language, page)}">`).join('\n  ')}
+  <link rel="alternate" hreflang="x-default" href="${canonicalUrl(defaultLanguage, page)}">
   <meta name="theme-color" content="#f7f4ef">
   <title>${title} · ProTours</title>
   <link rel="stylesheet" href="../assets/site.css">
@@ -302,6 +311,7 @@ for (const [lang, t] of Object.entries(copy)) {
   ];
   await Promise.all(pages.map(([route, title, description, main]) =>
     writeFile(new URL(`${route}.html`, directory), layout(lang, route, title, description, main))));
+  sitemapUrls.push(...pages.map(([route]) => canonicalUrl(lang, route)));
 }
 
 await cp(new URL('./assets/', import.meta.url), new URL('assets/', root), { recursive: true });
@@ -313,6 +323,13 @@ await writeFile(new URL('index.html', root), rootPage(layout(defaultLanguage, 'i
 for (const [route, document] of [['privacy', privacy.en], ['offer', offer.en]]) {
   await writeFile(new URL(`${route}.html`, root), rootPage(layout(defaultLanguage, route, document.title, document.description, legalPage(document))));
 }
+
+await writeFile(new URL('robots.txt', root), `User-agent: *\nAllow: /\n\nSitemap: ${siteOrigin}/sitemap.xml\n`);
+await writeFile(new URL('sitemap.xml', root), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapUrls.map(url => `  <url><loc>${url}</loc></url>`).join('\n')}
+</urlset>
+`);
 
 const legacy = new URL('ru/', root);
 await mkdir(legacy, { recursive: true });
